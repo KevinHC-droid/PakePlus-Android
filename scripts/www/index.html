@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Inventario de tienda</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--tx:#1d1d1b;--mut:#6b6a66;--bd:#e3e1db;--ac:#1f6f5c;--on:#fff;--in:#1f7a46;--out:#b3402f;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171716;--card:#222220;--tx:#f0efea;--mut:#a3a29c;--bd:#34332f;--ac:#3fae93;--on:#06231c;--in:#5cc58a;--out:#ee8b78;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171716;--card:#222220;--tx:#f0efea;--mut:#a3a29c;--bd:#34332f;--ac:#3fae93;--on:#06231c;--in:#5cc58a;--out:#ee8b78;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{overscroll-behavior:none}
+body{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+button,.tab,.tot,.sub,.ex{-webkit-user-select:none;user-select:none}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;padding:10px 14px 8px;border-bottom:1px solid var(--bd)}
+.brand{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.logo{width:46px;height:46px;border-radius:10px;flex:none}
+#shop{font-size:19px;font-weight:700;letter-spacing:.03em;border:0;border-bottom:1.5px dashed var(--bd);border-radius:0;background:transparent;padding:6px 2px}
+.dates{display:flex;gap:8px}
+.dates label{flex:1;font-size:12px;color:var(--mut)}
+input,textarea{width:100%;font:inherit;font-size:16px;padding:9px 10px;border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--tx)}
+.dates input{padding:6px 8px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px}
+.tab{flex:none;padding:7px 13px;border-radius:18px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:14px}
+.tab.on{background:var(--ac);color:var(--on);border-color:var(--ac);font-weight:600}
+#q{margin-top:6px}
+.tot{display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;font-size:13px;color:var(--mut)}
+.tot b{font-size:19px;color:var(--tx)}
+main{padding:0 12px 110px}
+.it{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.nm{background:none;border:0;color:var(--tx);font:inherit;font-weight:600;text-align:left;padding:0}
+.sub{font-size:12.5px;color:var(--mut);margin-top:2px}
+.ex{font-size:26px;font-weight:700;text-align:right;line-height:1}
+.ex small{display:block;font-size:11px;font-weight:400;color:var(--mut)}
+.btns{display:flex;gap:8px;margin-top:9px}
+button{font:inherit;cursor:pointer}
+.b{flex:1;padding:11px;border-radius:10px;border:1.5px solid;background:transparent;font-weight:600}
+.b.in{color:var(--in);border-color:var(--in)}.b.out{color:var(--out);border-color:var(--out)}.b.ven{color:var(--ac);border-color:var(--ac)}
+.btns .b{padding:11px 4px}
+.kb .bar{display:none}
+.pri{background:var(--ac);color:var(--on);border:0;border-radius:12px;padding:13px;font-weight:600}
+.sec{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:12px;padding:13px;font-weight:600}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--bd);z-index:6}
+.bar button{flex:1}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:none;align-items:flex-end}
+.ov.on{display:flex}
+.pn{width:100%;max-height:90%;overflow:auto;background:var(--bg);border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom,0px))}
+.pn h2{margin:0 0 12px;font-size:18px}
+.f{margin-bottom:10px}.f span{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}
+.row{display:flex;gap:8px;margin-top:8px}.row>*{flex:1}
+.step{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.step button{width:56px;height:52px;font-size:26px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
+.step input{text-align:center;font-size:24px;font-weight:700}
+.dng{background:transparent;color:var(--out);border:1.5px solid var(--out);border-radius:12px;padding:12px;font-weight:600}
+.hint{font-size:12.5px;color:var(--mut);margin:4px 0 10px}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:9px 14px;border-radius:20px;font-size:14px;z-index:30;display:none;max-width:90%;text-align:center}
+.empty{text-align:center;color:var(--mut);padding:30px 0}
+textarea{font-size:13px;resize:none}
+.gasto-item{display:flex;gap:6px;margin-bottom:6px;align-items:center}
+.gasto-item input[type="text"]{flex:2}
+.gasto-item input[type="number"]{flex:1}
+.btn-del-gasto{background:transparent;color:var(--out);border:1px solid var(--out);border-radius:8px;padding:6px 10px;font-weight:bold}
+</style></head>
+<body>
+<header>
+<div class="brand">
+<img class="logo" alt="Logo" src="icon-192.png">
+<input id="shop" data-h="tienda" placeholder="Nombre de la tienda">
+</div>
+<div class="dates">
+<label>Semana<input data-h="semana" inputmode="numeric"></label>
+<label>Día<input data-h="dia" inputmode="numeric"></label>
+<label>Mes<input data-h="mes" inputmode="numeric"></label>
+</div>
+<div class="tabs" id="tabs"></div>
+<input id="q" type="search" placeholder="Buscar mercancía…">
+</header>
+<div class="tot"><span>Total de la hoja <b id="tot">0</b></span><span>Total general <b id="gen">0</b></span></div>
+<main id="list"></main>
+<div class="bar">
+<button class="pri" data-act="new">+ Artículo</button>
+<button class="sec" data-act="export">Excel</button>
+<button class="sec" data-act="menu">Más</button>
+</div>
+<div class="ov" id="ov"><div class="pn" id="pn"></div></div>
+<div id="toast"></div>
+<input type="file" id="file" accept=".xlsx,.xls,.txt,.json" hidden>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js" crossorigin="anonymous"></script>
+<script>
+const KEY='inventario_tienda_v2';
+let uid=1;const nid=p=>p+Date.now().toString(36)+(uid++);
+const mk=(n,i,p,cat)=>({id:nid('a'),cat,n,i,e:0,s:0,v:0,f:null,p});
+const EC={transf:'',efec:'',usd:'',cobro_trabajadores:'',gastos:[]};
+function wk(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y)/864e5+1)/7)}
+function today(){const d=new Date();S.semana=wk(d);S.dia=d.getDate();S.mes=d.getMonth()+1}
+function fresh(){const c={id:nid('c'),n:'Hoja 1'};const o={tienda:'INNOVARTE',cats:[c],cur:c.id,items:[],c:{...EC}};const d=new Date();o.semana=wk(d);o.dia=d.getDate();o.mes=d.getMonth()+1;return o}
+function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.items&&o.cats&&o.cats.length){if(!o.c.gastos)o.c.gastos=[];return o}}}catch(e){}return fresh()}
+let S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>{const n=parseFloat(String(v).replace(',','.'));return isNaN(n)?0:n};
+const fmt=n=>Number(n).toLocaleString('es');
+function calc(it){const ex=it.i+it.e-it.s,v=it.v||0;const fin=it.f==null?ex-v:it.f,ven=it.f==null?v:ex-it.f;return{ex,fin,ven,imp:ven*it.p}}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2800)}
+function render(){
+ if(!S.cats.some(c=>c.id===S.cur))S.cur=S.cats[0].id;
+ const q=$('#q').value.trim().toLowerCase();let tot=0,gen=0,h='';
+ S.items.forEach(it=>{const c=calc(it);gen+=c.imp;if(it.cat!==S.cur)return;tot+=c.imp;if(q&&!it.n.toLowerCase().includes(q))return;
+ h+=`<div class="it"><div class="top"><div><button class="nm" data-act="edit" data-id="${it.id}">${esc(it.n)}</button><div class="sub">Inicio ${it.i} · Entrada ${it.e} · Salida ${it.s} · Precio ${fmt(it.p)}${c.ven?` · Venta ${c.ven} (${fmt(c.imp)})`:''}</div></div><div class="ex">${c.fin}<small>existencia</small></div></div><div class="btns"><button class="b in" data-act="ent" data-id="${it.id}">+ Entrada</button><button class="b out" data-act="sal" data-id="${it.id}">− Salida</button><button class="b ven" data-act="ven" data-id="${it.id}">Venta</button></div></div>`});
+ $('#list').innerHTML=h||'<div class="empty">Esta hoja no tiene artículos.<br>Toca «+ Artículo» para añadir el primero.</div>';
+ $('#tabs').innerHTML=S.cats.map(c=>`<button class="tab${c.id===S.cur?' on':''}" data-act="tab" data-id="${c.id}">${esc(c.n)}${c.id===S.cur?' ✎':''}</button>`).join('')+'<button class="tab" data-act="newcat">+ Hoja</button>';
+ $('#tot').textContent=fmt(tot);$('#gen').textContent=fmt(gen);
+ document.querySelectorAll('[data-h]').forEach(i=>{if(document.activeElement!==i)i.value=S[i.dataset.h]});
+}
+const ov=$('#ov'),pn=$('#pn');
+function open(h){pn.innerHTML=h;ov.classList.add('on');const i=pn.querySelector('[data-focus]');if(i)setTimeout(()=>{i.focus();i.select()},50)}
+function close(){ov.classList.remove('on')}
+const find=id=>S.items.find(x=>x.id===id);
+let cur=null,armed='';
+function mov(kind,id){const it=find(id);cur=id;const L={ent:['Entrada','entrada','e','Entradas registradas'],sal:['Salida','salida','s','Salidas registradas'],ven:['Venta','venta','v','Ventas registradas']}[kind],tot=it[L[2]]||0;
+ open(`<h2>${L[0]}: ${esc(it.n)}</h2><div class="hint">Existencia actual: ${calc(it).fin} · ${L[3]}: ${tot}${kind==='ven'?' · Precio '+fmt(it.p):''}<br>Cambia el número para corregir o aumentar.</div><div class="step"><button data-act="step" data-d="-1">−</button><input id="qty" inputmode="numeric" value="${tot}" data-focus="1"><button data-act="step" data-d="1">+</button></div><button class="pri" style="width:100%" data-act="okmov" data-kind="${kind}">Confirmar ${L[1]}</button>`)}
+function edit(id){const it=find(id);cur=id;armed='';
+ open(`<h2>Editar artículo</h2><div class="f"><span>Mercancía</span><input id="e_n" value="${esc(it.n)}"></div><div class="row"><div class="f"><span>Inicio</span><input id="e_i" inputmode="numeric" value="${it.i}"></div><div class="f"><span>Precio</span><input id="e_p" inputmode="decimal" value="${it.p}"></div></div><div class="row"><div class="f"><span>Entradas</span><input id="e_e" inputmode="numeric" value="${it.e}"></div><div class="f"><span>Salidas</span><input id="e_s" inputmode="numeric" value="${it.s}"></div><div class="f"><span>Ventas</span><input id="e_v" inputmode="numeric" value="${it.v||0}"></div></div><div class="f"><span>Conteo final (vacío = automático)</span><input id="e_f" inputmode="numeric" value="${it.f==null?'':it.f}"></div><div class="row"><button class="dng" data-act="del">Quitar del inventario</button><button class="pri" data-act="okedit">Guardar</button></div>`)}
+function newItem(){const c=S.cats.find(x=>x.id===S.cur);open(`<h2>Añadir artículo a «${esc(c.n)}»</h2><div class="f"><span>Mercancía</span><input id="n_n" placeholder="Ej: Saya 4-12" data-focus="1"></div><div class="row"><div class="f"><span>Cantidad inicial</span><input id="n_i" inputmode="numeric" value="0"></div><div class="f"><span>Precio</span><input id="n_p" inputmode="decimal" value="0"></div></div><button class="pri" style="width:100%" data-act="oknew">Añadir al inventario</button>`)}
+function catSheet(isNew){armed='';const c=S.cats.find(x=>x.id===S.cur);
+ open(isNew?`<h2>Nueva hoja</h2><div class="f"><span>Nombre de la categoría</span><input id="c_n" placeholder="Ej: Ropa de niña" data-focus="1"></div><button class="pri" style="width:100%" data-act="okcat" data-new="1">Crear hoja</button>`
+ :`<h2>Editar hoja</h2><div class="f"><span>Nombre de la categoría</span><input id="c_n" value="${esc(c.n)}" data-focus="1"></div><div class="hint">Al quitar la hoja se borran también sus artículos.</div><div class="row"><button class="dng" data-act="delcat">Quitar hoja</button><button class="pri" data-act="okcat">Guardar</button></div>`)}
+function clearMenu(){armed='';const c=S.cats.find(x=>x.id===S.cur),n=S.items.filter(x=>x.cat===S.cur).length;
+ open(`<h2>Limpiar hoja</h2><div class="hint">¿Qué quieres borrar?</div><button class="dng" style="width:100%;margin-bottom:8px" data-act="clr1">Solo «${esc(c.n)}» (${n} artículos)</button><button class="dng" style="width:100%" data-act="clrall">Todas las hojas (${S.items.length} artículos)</button><div class="hint">Las hojas se conservan, solo se borran los artículos.</div>`)}
+function renderGastosHTML(){
+ const g=S.c.gastos||[];
+ if(!g.length)return '<div class="hint">No hay gastos extras registrados.</div>';
+ return g.map((item,idx)=>`<div class="gasto-item"><input type="text" placeholder="Descripción" value="${esc(item.desc)}" data-gidx="${idx}" data-gk="desc"><input type="number" placeholder="Monto" value="${item.monto||''}" data-gidx="${idx}" data-gk="monto"><button class="btn-del-gasto" data-act="delgasto" data-idx="${idx}">✕</button></div>`).join('')
+}
+function menu(){armed='';const c=S.c;
+ open(`<h2>Cierre del día</h2><div class="row"><div class="f"><span>Transferencias</span><input data-k="transf" value="${esc(c.transf||'')}"></div><div class="f"><span>Efectivo</span><input data-k="efec" value="${esc(c.efec||'')}"></div></div><div class="row"><div class="f"><span>USD</span><input data-k="usd" value="${esc(c.usd||'')}"></div><div class="f"><span>Cobro trabajadores</span><input data-k="cobro_trabajadores" value="${esc(c.cobro_trabajadores||'')}"></div></div><div class="f"><span>Gastos Extras (Solo reflejo)</span><div id="gastos-list">${renderGastosHTML()}</div><button class="sec" style="width:100%;margin-top:6px" data-act="addgasto">+ Añadir Gasto</button></div><div class="row"><button class="sec" data-act="share">Compartir IPV</button><button class="sec" data-act="loadsheet">Cargar IPV</button></div><div class="row"><button class="sec" data-act="import">Importar Excel</button><button class="dng" data-act="clearsheet">Limpiar hoja</button></div><div class="row"><button class="dng" data-act="closeday" style="width:100%">Empezar nuevo IPV</button></div><div class="hint">«Empezar nuevo IPV» deja el conteo final como inicio del día siguiente y pone entradas, salidas y ventas en 0. «Limpiar hoja» borra todos los artículos de la hoja que tienes abierta.</div>`)}
+async function zip(s){const cs=new CompressionStream('deflate-raw'),w=cs.writable.getWriter();w.write(new TextEncoder().encode(s)).catch(()=>{});w.close().catch(()=>{});return new Uint8Array(await new Response(cs.readable).arrayBuffer())}
+async function unzip(u){const ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter();w.write(u).catch(()=>{});w.close().catch(()=>{});return new TextDecoder().decode(await new Response(ds.readable).arrayBuffer())}
+const b64=u=>{let s='';for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function code(){const k=S.cats.map(c=>[c.n,S.items.filter(x=>x.cat===c.id).map(x=>[x.n,x.i,x.e,x.s,x.v||0,x.f,x.p])]),j=JSON.stringify({t:S.tienda,d:[S.semana,S.dia,S.mes],c:S.c,k});
+ if(window.CompressionStream)return 'INV3:'+b64(await zip(j))+'.';return 'INV2:'+btoa(unescape(encodeURIComponent(j)))+'.'}
+const shareText=async()=>`IPV ${S.tienda} · ${S.dia}/${S.mes}\n(En la app: Más → Cargar IPV, y pega este mensaje)\n`+await code();
+async function shareSheet(){const tx=await shareText();open(`<h2>Compartir IPV</h2><div class="hint">Se envía el IPV completo (inventario, entradas, salidas, ventas, fecha y detalles de cobro/gastos). Quien lo reciba puede cargar el IPV o cargarlo y empezar el nuevo día con el conteo final como inicio.</div><textarea id="sh" rows="5" readonly>${esc(tx)}</textarea><div class="row"><button class="pri" data-act="sendshare">Enviar (WhatsApp…)</button><button class="sec" data-act="copyshare">Copiar</button></div>`)}
+function loadSheet(){armed='';open(`<h2>Cargar IPV</h2><div class="hint">Pega aquí el mensaje que te enviaron. Esto reemplaza el inventario de este teléfono.</div><textarea id="ld" rows="5" placeholder="Pega el mensaje…" data-focus="1"></textarea><div class="row"><button class="sec" data-act="okload" data-mode="asis">Cargar IPV</button><button class="pri" data-act="okload" data-mode="next">Cargar IPV y empezar nuevo día</button></div><div class="row"><button class="sec" data-act="import">Desde archivo…</button></div><div class="hint">«Cargar IPV» carga todo como lo dejó quien lo envió (entradas, salidas, ventas y fecha). «Cargar IPV y empezar nuevo día» usa el conteo final como inicio y deja entradas, salidas y ventas en 0.</div>`)}
+function showIncoming(name){armed='';open(`<h2>Archivo recibido</h2><div class="hint">${esc(name)}<br>Esto reemplaza el inventario de este teléfono. «Cargar IPV» lo carga como viene. «Cargar IPV y empezar nuevo día» pone el conteo final como inicio y deja entradas, salidas y ventas en 0.</div><div class="row"><button class="sec" data-act="okin" data-mode="asis">Cargar IPV</button><button class="pri" data-act="okin" data-mode="next">Cargar IPV y empezar nuevo día</button></div><div class="row"><button class="sec" data-act="cancelin">Cancelar</button></div>`)}
+async function applyCode(t,mode){const raw=String(t),mm=raw.match(/INV([123]):/);if(!mm)return false;
+ const mb=raw.slice(mm.index+mm[0].length).replace(/\s+/g,'').match(/^[A-Za-z0-9+\/=]+/);if(!mb)return false;
+ try{const v2=mm[1]!=='1',o=JSON.parse(mm[1]==='3'?await unzip(unb64(mb[0])):decodeURIComponent(escape(atob(mb[0]))));if(!o||!Array.isArray(o.k))return false;
+  const cats=[],items=[];o.k.forEach(k=>{const c={id:nid('c'),n:String(k[0])};cats.push(c);k[1].forEach(x=>{
+   const it=v2?mk(String(x[0]),Math.floor(num(x[1])),num(x[6]),c.id):mk(String(x[0]),Math.floor(num(x[1])),num(x[2]),c.id);
+   if(v2){it.e=Math.floor(num(x[2]));it.s=Math.floor(num(x[3]));it.v=Math.floor(num(x[4]));it.f=x[5]==null?null:Math.floor(num(x[5]));
+    if(mode==='next'){it.i=calc(it).fin;it.e=0;it.s=0;it.v=0;it.f=null}}
+   items.push(it)})});
+  if(!cats.length)return false;S.cats=cats;S.items=items;S.cur=cats[0].id;if(o.t)S.tienda=String(o.t);
+  if(v2&&mode!=='next'){if(Array.isArray(o.d)){S.semana=o.d[0];S.dia=o.d[1];S.mes=o.d[2]}S.c={...EC,...(o.c||{})}}else{S.c={...EC};today()}
+  return true}catch(e){return false}}
+async function copyTxt(t){try{await navigator.clipboard.writeText(t);return true}catch(e){const a=$('#sh');if(a){a.select();try{return document.execCommand('copy')}catch(x){}}return false}}
+document.addEventListener('click',async e=>{
+ if(e.target===ov){close();return}
+ const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,id=b.dataset.id;
+ if(a==='ent'||a==='sal'||a==='ven')mov(a,id);
+ else if(a==='edit')edit(id);
+ else if(a==='new')newItem();
+ else if(a==='menu')menu();
+ else if(a==='export')exportXlsx('dl');
+ else if(a==='xshare'){close();exportXlsx('share')}
+ else if(a==='xdl'){close();exportXlsx('dl')}
+ else if(a==='import')$('#file').click();
+ else if(a==='tab'){if(S.cur===id)catSheet(false);else{S.cur=id;save();render()}}
+ else if(a==='newcat')catSheet(true);
+ else if(a==='okcat'){const n=$('#c_n').value.trim();if(!n){toast('Escribe el nombre');return}
+  if(b.dataset.new){const c={id:nid('c'),n};S.cats.push(c);S.cur=c.id}else S.cats.find(x=>x.id===S.cur).n=n;save();render();close()}
+ else if(a==='delcat'){if(S.cats.length<2){toast('Debe quedar al menos una hoja');return}
+  if(armed!=='cat'){armed='cat';b.textContent='¿Seguro? Toca de nuevo';return}
+  S.items=S.items.filter(x=>x.cat!==S.cur);S.cats=S.cats.filter(x=>x.id!==S.cur);S.cur=S.cats[0].id;save();render();close();toast('Hoja quitada')}
+ else if(a==='step'){const q=$('#qty');q.value=Math.max(0,num(q.value)+num(b.dataset.d))}
+ else if(a==='okmov'){const it=find(cur),k=b.dataset.kind,key={ent:'e',sal:'s',ven:'v'}[k],q=Math.floor(num($('#qty').value));if(q<0){toast('Pon una cantidad válida');return}
+  const old=it[key]||0,d=q-old;if(d===0){close();return}
+  const bak={e:it.e,s:it.s,v:it.v,f:it.f};it[key]=q;if(it.f!=null)it.f+=(k==='ent'?d:-d);
+  if(calc(it).fin<0){Object.assign(it,bak);toast('No alcanza la existencia');return}
+  toast(k==='ven'?`Ventas: ${q} · importe ${fmt(q*it.p)}`:`${k==='ent'?'Entradas':'Salidas'}: ${q}`);save();render();close()}
+ else if(a==='okedit'){const it=find(cur),n=$('#e_n').value.trim();if(!n){toast('Escribe el nombre');return}
+  it.n=n;it.i=Math.floor(num($('#e_i').value));it.p=num($('#e_p').value);it.e=Math.max(0,Math.floor(num($('#e_e').value)));it.s=Math.max(0,Math.floor(num($('#e_s').value)));it.v=Math.max(0,Math.floor(num($('#e_v').value)));const f=$('#e_f').value.trim();it.f=f===''?null:Math.floor(num(f));save();render();close()}
+ else if(a==='del'){if(armed!==cur){armed=cur;b.textContent='¿Seguro? Toca de nuevo';return}
+  S.items=S.items.filter(x=>x.id!==cur);save();render();close();toast('Artículo quitado')}
+ else if(a==='oknew'){const n=$('#n_n').value.trim();if(!n){toast('Escribe el nombre');return}
+  S.items.push(mk(n,Math.floor(num($('#n_i').value)),num($('#n_p').value),S.cur));save();render();close();toast('Artículo añadido')}
+ else if(a==='clearsheet')clearMenu();
+ else if(a==='clr1'){const n=S.items.filter(x=>x.cat===S.cur).length;if(!n){toast('La hoja ya está vacía');return}
+  if(armed!=='c1'){armed='c1';b.textContent='¿Seguro? Toca de nuevo';return}
+  S.items=S.items.filter(x=>x.cat!==S.cur);save();render();close();toast('Hoja limpiada')}
+ else if(a==='clrall'){if(!S.items.length){toast('No hay artículos');return}
+  if(armed!=='ca'){armed='ca';b.textContent='¿Seguro? Toca de nuevo';return}
+  S.items=[];save();render();close();toast('Todas las hojas limpiadas')}
+ else if(a==='closeday'){if(armed!=='day'){armed='day';b.textContent='¿Seguro? Toca de nuevo';return}
+  S.items.forEach(it=>{it.i=calc(it).fin;it.e=0;it.s=0;it.v=0;it.f=null});S.c={...EC};today();save();render();close();toast('Nuevo IPV listo')}
+ else if(a==='share')shareSheet();
+ else if(a==='sendshare'){const t=$('#sh').value;if(navigator.share){try{await navigator.share({text:t})}catch(x){}}else toast((await copyTxt(t))?'Copiado. Pégalo en WhatsApp':'Selecciona el texto y cópialo')}
+ else if(a==='copyshare')toast((await copyTxt($('#sh').value))?'Copiado. Pégalo en WhatsApp':'Selecciona el texto y cópialo');
+ else if(a==='loadsheet')loadSheet();
+ else if(a==='doshare')shareReady();
+ else if(a==='dodl'){close();dlReady()}
+ else if(a==='cancelin'){incoming=null;close()}
+ else if(a==='addgasto'){if(!S.c.gastos)S.c.gastos=[];S.c.gastos.push({desc:'',monto:''});save();$('#gastos-list').innerHTML=renderGastosHTML()}
+ else if(a==='delgasto'){const idx=parseInt(b.dataset.idx,10);if(!isNaN(idx)&&S.c.gastos){S.c.gastos.splice(idx,1);save();$('#gastos-list').innerHTML=renderGastosHTML()}}
+ else if(a==='okin'){const md=b.dataset.mode;if(armed!=='in'+md){armed='in'+md;b.textContent='¿Reemplazar todo? Toca de nuevo';return}
+  let ok=false;try{if(incoming.type==='x'){importXlsx(incoming.buf,md);ok=true}else if(await applyCode(incoming.text,md)){save();render();close();toast(md==='next'?'IPV cargado. Nuevo día listo':'IPV cargado');ok=true}}catch(x){}
+  if(ok)incoming=null;else toast('No reconozco ese archivo')}
+ else if(a==='okload'){const md=b.dataset.mode;if(!$('#ld').value.trim()){toast('Pega primero el mensaje');return}
+  if(armed!=='load'+md){armed='load'+md;b.textContent='¿Reemplazar todo? Toca de nuevo';return}
+  if(await applyCode($('#ld').value,md)){save();render();close();toast(md==='next'?'IPV cargado. Nuevo día listo':'IPV cargado')}else{armed='';b.textContent=md==='next'?'Cargar IPV y empezar nuevo día':'Cargar IPV';toast('No reconozco ese código. Copia el mensaje completo')}}
+});
+document.addEventListener('input',e=>{const t=e.target;
+ if(t.id==='q')render();
+ else if(t.dataset.h){S[t.dataset.h]=t.value;save()}
+ else if(t.dataset.k){S.c[t.dataset.k]=t.value;save()}
+ else if(t.dataset.gk){const idx=parseInt(t.dataset.gidx,10);if(!isNaN(idx)&&S.c.gastos&&S.c.gastos[idx]){S.c.gastos[idx][t.dataset.gk]=t.value;save()}}
+});
+let ready=null;
+function dlReady(){try{const u=URL.createObjectURL(ready.blob),a=document.createElement('a');a.href=u;a.download=ready.fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Excel guardado en Descargas. Ábrelo desde Archivos para subirlo a Drive')}catch(e){toast('No se pudo guardar el archivo')}}
+function shareReady(){const f=()=>{close();dlReady()};
+ try{navigator.share({files:[ready.file],title:ready.fn}).then(()=>close()).catch(err=>{if(err&&err.name==='AbortError')return;f()})}catch(err){f()}}
+let incoming=null;
+async function checkShared(){
+ if(!/[?&]shared=1/.test(location.search))return;
+ try{history.replaceState(null,'',location.pathname)}catch(e){}
+ try{const c=await caches.open('share-inbox'),rf=await c.match('file'),rt=await c.match('text');let name='';
+  if(rf){const buf=await rf.arrayBuffer();name=decodeURIComponent(rf.headers.get('x-name')||'archivo');
+   incoming=/\.xlsx?$/i.test(name)?{type:'x',buf}:{type:'t',text:new TextDecoder().decode(buf)}}
+  else if(rt){const t=await rt.text();if(!/INV[123]:/.test(t))return;name='IPV recibido';incoming={type:'t',text:t}}
+  await c.delete('file');await c.delete('text');
+  if(incoming)showIncoming(name)
+ }catch(e){}
+}
+const safe=(s,d)=>String(s||d).replace(/[\[\]:*?\/\\]/g,' ').trim();
+function exportSheet(){open(`<h2>Guardar Excel</h2><div class="hint">«Compartir / Drive» abre el menú del teléfono para enviarlo a Google Drive, WhatsApp u otra app. «Descargar» lo deja en el teléfono.</div><div class="row"><button class="pri" data-act="xshare">Compartir / Drive</button><button class="sec" data-act="xdl">Descargar</button></div>`)}
+async function exportXlsx(mode){
+ if(typeof ExcelJS==='undefined'){toast('No se pudo cargar el generador de Excel');return}
+ const wb=new ExcelJS.Workbook(),T={style:'thin'},BD={top:T,left:T,bottom:T,right:T},used=[];
+ let grand=0;S.items.forEach(x=>grand+=calc(x).imp);
+ S.cats.forEach((cat,ci)=>{
+  let nm=safe(cat.n,'Hoja').slice(0,28)||'Hoja',k=2,b0=nm;while(used.includes(nm.toLowerCase()))nm=b0+' '+(k++);used.push(nm.toLowerCase());
+  const ws=wb.addWorksheet(nm),box=(r,a,b)=>{for(let c=a;c<=b;c++)ws.getCell(r,c).border=BD};
+  
+  // Configuracion de pagina: carta, centrado horizontalmente, margenes a 0
+  ws.pageSetup={
+   paperSize:9, // Letter / Carta
+   orientation:'portrait',
+   fitToPage:true,
+   fitToWidth:1,
+   fitToHeight:0,
+   horizontalCentered:true,
+   margins:{left:0,right:0,top:0,bottom:0,header:0,footer:0}
+  };
+
+  [20,8,8,8,10,8,8,8,10].forEach((w,i)=>ws.getColumn(i+1).width=w);
+  ws.mergeCells('A1:I1');const A1=ws.getCell('A1');A1.value=S.tienda||'';A1.font={bold:true,size:14};A1.alignment={horizontal:'center'};
+  ws.getRow(2).values=['Semana:',S.semana,'Día:',S.dia,'Mes:',S.mes];
+  ws.getRow(3).values=['Mercancía','Inicio','Entrada','Salida','Existencia','Final','Venta','Precio','Importe'];
+  for(let c=1;c<=9;c++){const x=ws.getCell(3,c);x.font={bold:true};x.alignment={horizontal:'center'};x.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFE8E6DF'}}}
+  box(3,1,9);let total=0;const its=S.items.filter(x=>x.cat===cat.id);
+  its.forEach((it,k)=>{const r=k+4,c=calc(it);total+=c.imp;
+   ws.getRow(r).values=[it.n,it.i,it.e,it.s,{formula:`B${r}+C${r}-D${r}`,result:c.ex},{formula:`E${r}-G${r}`,result:c.fin},c.ven,it.p,{formula:`G${r}*H${r}`,result:c.imp}];box(r,1,9)});
+  const last=its.length+3,tr=last+2;
+  ws.getCell(tr,8).value='Total:';ws.getCell(tr,8).font={bold:true};ws.getCell(tr,9).value={formula:`SUM(I4:I${Math.max(last,4)})`,result:total};ws.getCell(tr,9).font={bold:true};box(tr,8,9);
+  if(ci===0){
+   if(S.cats.length>1){ws.getCell(tr+1,8).value='General:';ws.getCell(tr+1,8).font={bold:true};ws.getCell(tr+1,9).value=grand;ws.getCell(tr+1,9).font={bold:true};box(tr+1,8,9)}
+   
+   let infoRows=[
+    ['Transferencias:',S.c.transf],
+    ['Efectivo:',S.c.efec],
+    ['USD:',S.c.usd],
+    ['Cobro trabajadores:',S.c.cobro_trabajadores]
+   ];
+   
+   if(S.c.gastos && S.c.gastos.length){
+    S.c.gastos.forEach(g=>{
+     if(g.desc || g.monto){
+      infoRows.push([`Gasto (${g.desc||'Extra'}):`,g.monto||'0']);
+     }
+    });
+   }
+
+   infoRows.forEach((p,k)=>{const r=tr+k;ws.getCell(r,1).value=p[0];ws.getCell(r,1).font={bold:true};ws.mergeCells(r,2,r,4);ws.getCell(r,2).value=p[1]||'';ws.getCell(r,2).alignment={horizontal:'left'};box(r,1,4)});
+  }
+ });
+ const out=await wb.xlsx.writeBuffer(),p=n=>String(n).padStart(2,'0');
+ const fn=`${safe(S.tienda,'Inventario')}_${new Date().getFullYear()}-${p(S.mes)}-${p(S.dia)}.xlsx`,blob=new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+ try{
+  const file=new File([blob],fn,{type:blob.type});ready={fn,blob,file};
+  if(mode==='share'&&navigator.canShare&&navigator.canShare({files:[file]}))open(`<h2>Excel listo</h2><div class="hint">${esc(fn)}</div><div class="row"><button class="pri" data-act="doshare">Compartir / Drive</button><button class="sec" data-act="dodl">Descargar</button></div>`);
+  else dlReady()
+ }catch(e){toast('No se pudo generar el archivo')}
+}
+const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+function importXlsx(buf,mode){
+ const wb=XLSX.read(buf,{type:'array'}),cats=[],items=[];let shop='',dt=null;
+ wb.SheetNames.forEach(sn=>{const a=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});
+  const hi=a.findIndex(row=>row.some(c=>norm(c).startsWith('mercanc')));if(hi<0)return;
+  const H=a[hi].map(norm),ci=k=>H.findIndex(h=>h.startsWith(k)),cn=ci('mercanc'),cI=ci('inicio'),cF=ci('final'),cP=ci('precio'),cE=ci('entrada'),cS=ci('salida');
+  if(mode==='asis'&&!dt&&hi>=2){const r2=a[1].map(norm),g=k=>{const i=r2.findIndex(x=>x.startsWith(k));return i>=0&&a[1][i+1]!==''?a[1][i+1]:null};dt={s:g('semana'),d:g('dia'),m:g('mes')}}
+  if(!shop&&hi>0&&a[0][0])shop=String(a[0][0]).trim();
+  const cat={id:nid('c'),n:sn};let cnt=0;
+  for(let k=hi+1;k<a.length;k++){const row=a[k],n=String(row[cn]).trim();if(!n)continue;if(/^(total|transfer)/.test(norm(n)))break;
+   const fin=cF>=0&&row[cF]!==''?num(row[cF]):null,ini=cI>=0?num(row[cI]):0;const pr=cP>=0?num(row[cP]):0;let it;
+   if(mode==='asis'){it=mk(n,Math.floor(ini),pr,cat.id);it.e=Math.floor(cE>=0?num(row[cE]):0);it.s=Math.floor(cS>=0?num(row[cS]):0);if(fin!=null){const ex=it.i+it.e-it.s,f2=Math.floor(fin);if(f2<=ex)it.v=ex-f2;else it.f=f2}}
+   else it=mk(n,Math.floor(fin!=null?fin:ini),pr,cat.id);
+   items.push(it);cnt++}
+  cats.push(cat)});
+ if(!cats.length)throw 0;
+ S.cats=cats;S.items=items;S.cur=cats[0].id;if(shop)S.tienda=shop;S.c={...EC};if(mode==='asis'&&dt){if(dt.s!=null)S.semana=dt.s;if(dt.d!=null)S.dia=dt.d;if(dt.m!=null)S.mes=dt.m}else today();save();render();close();toast(`${cats.length} hoja(s), ${items.length} artículos importados`)
+}
+$('#file').addEventListener('change',ev=>{
+ const f=ev.target.files[0];if(!f)return;const r=new FileReader(),isX=/\.xlsx?$/i.test(f.name);
+ r.onload=()=>{try{
+  if(isX)incoming={type:'x',buf:r.result};
+  else{if(!/INV[123]:/.test(r.result))throw 0;incoming={type:'t',text:r.result}}
+  showIncoming(f.name)
+ }catch(e){toast('No reconozco el formato del archivo')}};
+ isX?r.readAsArrayBuffer(f):r.readAsText(f);ev.target.value='';
+});
+const vv=window.visualViewport;let H0=innerHeight;
+function kb(){if(!vv)return;const typing=/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||'');if(!typing)H0=Math.max(innerHeight,vv.height);
+ ov.style.bottom=Math.max(0,innerHeight-vv.height-vv.offsetTop)+'px';document.body.classList.toggle('kb',typing&&H0-vv.height>120)}
+if(vv){vv.addEventListener('resize',kb);vv.addEventListener('scroll',kb)}
+document.addEventListener('focusin',e=>{if(e.target.closest&&e.target.closest('.pn'))setTimeout(()=>{kb();e.target.scrollIntoView({block:'center',behavior:'smooth'})},300)});
+document.addEventListener('focusout',()=>setTimeout(kb,200));
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='qty'){e.preventDefault();const b=pn.querySelector('.pri');if(b)b.click()}});
+render();
+checkShared();
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body></html>
